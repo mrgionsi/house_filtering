@@ -1,0 +1,15 @@
+<div>
+    <button (click)="startSearch()" [disabled]="isLoading">
+        {{ isLoading ? 'Searching...' : 'Start Search' }}
+    </button>
+</div>
+
+<div *ngIf="logs.length > 0">
+    <h3>Search Logs:</h3>
+    <pre>
+      {{ logs.join('\n') }}
+    </pre>
+</div>
+
+<div id="logs" style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;">
+</div>

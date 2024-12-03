@@ -1,0 +1,39 @@
+<div class="search-container">
+    <input #searchInput type="text" pInputText placeholder="Search..."
+        (input)="dt.filterGlobal(searchInput.value, 'contains')" />
+</div>
+
+<p-table #dt [value]="data" [paginator]="true" [rows]="20" [globalFilterFields]="['title', 'price']"
+    (sortFunction)="customSort($event)">
+    <ng-template pTemplate="header">
+        <tr>
+            <th pSortableColumn="id">
+                ID <p-sortIcon [field]="'id'"></p-sortIcon>
+            </th>
+            <th pSortableColumn="title">
+                Title <p-sortIcon [field]="'title'"></p-sortIcon>
+            </th>
+            <th pSortableColumn="price">
+                Prezzo <p-sortIcon [field]="'price'"></p-sortIcon>
+            </th>
+            <th pSortableColumn="clicked">
+                Visualizzato <p-sortIcon [field]="'clicked'"></p-sortIcon>
+            </th>
+            <th pSortableColumn="date_added">
+                Date Added <p-sortIcon [field]="'date_added'"></p-sortIcon>
+            </th>
+            <th>Link</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-item>
+        <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.title }}</td>
+            <td>{{ item.price | numberFormat}}</td>
+
+            <td>{{ item.clicked ? 'Visualizzato' : 'Nope' }}</td>
+            <td>{{ item.date_added }}</td>
+            <td><a [href]="item.link" target="_blank" (click)="setClicked(item.id)">Link</a></td>
+        </tr>
+    </ng-template>
+</p-table>
