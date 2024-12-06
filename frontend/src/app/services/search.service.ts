@@ -18,4 +18,12 @@ export class SearchService {
       observe: 'body',
     });
   }
+  setSaved(save: boolean, id: number): Observable<string> {
+    return this.http.get(this.apiUrl, {
+      responseType: 'text', // Expect a text stream
+      reportProgress: true,
+      observe: 'body',
+    });
+  }
+
 }

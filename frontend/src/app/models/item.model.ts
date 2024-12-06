@@ -5,4 +5,6 @@ export interface Item {
     clicked: boolean;
     date_added: string;
     link: string;
+    saved: boolean;
+    rating: number;
 }

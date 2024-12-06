@@ -24,6 +24,7 @@ export class ItemDataService {
       })
     );
   }
+
   getData(): Observable<Item[]> {
     return this.http.get<Item[]>(this.apiUrl + '/get-data', {
       headers: new HttpHeaders({
@@ -35,5 +36,22 @@ export class ItemDataService {
         return throwError(() => new Error('Failed to fetch data'));
       })
     );
+  }
+
+  // Method to toggle the 'saved' state of an item
+  toggleSaved(itemId: number, savedValue: boolean): Observable<any> {
+    const url = `${this.apiUrl}/api/item/${itemId}/save`;  // Build the API URL with the item ID
+    const body = { saved: savedValue };  // Request body with the new 'saved' value
+
+    // Make the PATCH request to the Flask API
+    return this.http.patch<any>(url, body);
+  }
+
+  changeRating(id: number, rating: number): Observable<any> {
+    const url = `${this.apiUrl}/api/item/${id}/rating`;  // Build the API URL with the item ID
+    const body = { rating: rating };  // Request body with the new 'saved' value
+
+    // Make the PATCH request to the Flask API
+    return this.http.patch<any>(url, body);
   }
 }

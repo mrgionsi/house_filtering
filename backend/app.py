@@ -1,11 +1,14 @@
 from flask import Flask, Response, render_template, request, jsonify, stream_with_context
+from flask_cors import CORS
 from tinydb import Query, TinyDB
 from math import ceil
 import re
 
+from manage import changeRating, setSaved
 from new_main import start_search_scraping
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "PATCH", "DELETE", "OPTIONS"]}})
 
 db = TinyDB('./db.json')
 Property = Query()
@@ -14,7 +17,7 @@ Property = Query()
 data = db.all()
 
 
-@app.route('/set-clicked', methods=['POST'])
+@app.route('/set-clicked', methods=['PATCH'])
 def set_clicked():
     item_id = request.json.get('id')
     if item_id is None:
@@ -22,7 +25,12 @@ def set_clicked():
 
     # Update the 'clicked' field for the matching item
     db.update({'clicked': True}, Property.id == item_id)
-    return jsonify({'message': 'Clicked status updated', 'id': item_id})
+    response = {
+        "status": 200,
+        "message": "Clicked status updated', 'id'",
+        "data": {"id": item_id}
+    }
+    return jsonify(response), 200
 
 @app.route('/search', methods=['GET'])
 def search_endpoint():
@@ -30,6 +38,29 @@ def search_endpoint():
     def generate_logs():
         yield from start_search_scraping()
     return Response(generate_logs(), content_type='text/plain')
+
+
+@app.route('/api/item/<int:item_id>/save', methods=['PATCH'])
+def toggle_saved(item_id):
+    # Get the new 'saved' state from the request body
+    request_data = request.get_json()
+
+
+    # Get the new saved value from the request (e.g., true or false)
+    saved_value = request_data.get('saved', None)
+
+    return setSaved(item_id, saved_value)
+
+@app.route('/api/item/<int:item_id>/rating', methods=['PATCH'])
+def change_rating(item_id):
+    # Get the new 'saved' state from the request body
+    request_data = request.get_json()
+
+
+    # Get the new saved value from the request (e.g., true or false)
+    rating = request_data.get('rating', None)
+
+    return changeRating(item_id, rating)
 
 
 # Function to sort data based on column and direction
@@ -51,7 +82,11 @@ def parse_formatted_value(value):
     return int(value) if value else 0  # Convert to integer
 
 
-
+@app.route('/get-data')
+def getData():
+    data = db.all()
+    return data
+    
 @app.route('/')
 def index():
     data = db.all()

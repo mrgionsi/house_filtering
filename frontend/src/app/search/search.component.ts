@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { SearchService } from '../services/search.service';
 import { CommonModule } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ButtonModule],
   styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit {
@@ -22,14 +23,10 @@ export class SearchComponent implements OnInit {
     this.isLoading = true;
     this.logs = [];  // Reset logs on each new search
 
-    var logsContainer = document.getElementById("logs");
-    console.log(logsContainer)
-    logsContainer!.innerHTML = "Starting search...\n";
     this.logs.push("Starting search...\n");
     try {
       const response = await fetch('http://localhost:5000/search');
       if (!response.body) {
-        logsContainer!.innerHTML += "Streaming not supported.\n";
         this.logs.push("Streaming not supported.\n");
         return;
       }
@@ -43,15 +40,16 @@ export class SearchComponent implements OnInit {
         done = readerDone;
         if (value) {
           const chunk = decoder.decode(value, { stream: true });
-          logsContainer!.innerHTML += chunk;
           this.logs.push(chunk);
-          logsContainer!.scrollTop = logsContainer!.scrollHeight; // Auto-scroll to the latest log
         }
       }
 
-      logsContainer!.innerHTML += "\nSearch completed.\n";
+      this.logs.push("\nSearch completed.\n");
+      this.isLoading = false;
     } catch (error) {
-      logsContainer!.innerHTML += `\nError: ${error}\n`;
+      this.logs.push(`\nError: ${error}\n`)
+      this.isLoading = false;
+
 
     }
   }

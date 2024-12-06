@@ -5396,9 +5396,11 @@ def start_search_scraping():
     logging.debug(json_data['count'])
     max_page=json_data['maxPages']
     logging.info(f"Number of pages  {max_page}")
+    yield f"Number of pages  {max_page}"
     while count_page <= max_page:
         time.sleep(_DELAY)
         logging.info(f"Risultati in pagina {count_page}")
+        yield f"Risultati in pagina {count_page}"
         json_data = fetch_data(count_page)
         results = json_data['results']
         count_page=int(count_page) + 1
@@ -5423,11 +5425,11 @@ def start_search_scraping():
                         price = res['realEstate']['price'].get('value', res['realEstate']['price'].get('formattedValue')), ##Get value if not found is needed due to price private
                         formattedValue=res['realEstate']['price']['formattedValue'],  # Directly assign value, no {}
                         link=res['seo']['url'],  # Directly assign value, no {}
+                        img=res['realEstate']['properties'][0]['photo']['urls']['medium'],
                         date_added=str(date.today()),
                         clicked=False)  # Correct date format
                        
-                    addEntry(house)
-                    yield f"Title: {house.title}, Price: {house.price}, Link: {house.link}\n"
+                    yield from addEntry(house)
 
                     logging.info(f"Titolo: {res['seo']['title']} - {res['realEstate']['price']['formattedValue']} ")
                     logging.info(f"Link: {res['seo']['url']}")

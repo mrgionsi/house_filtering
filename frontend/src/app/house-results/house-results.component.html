@@ -8,7 +8,7 @@
     <ng-template pTemplate="header">
         <tr>
             <th pSortableColumn="id">
-                ID <p-sortIcon [field]="'id'"></p-sortIcon>
+                Image
             </th>
             <th pSortableColumn="title">
                 Title <p-sortIcon [field]="'title'"></p-sortIcon>
@@ -23,17 +23,34 @@
                 Date Added <p-sortIcon [field]="'date_added'"></p-sortIcon>
             </th>
             <th>Link</th>
+            <!-- Add a new column for the 'Saved' heart icon -->
+            <th pSortableColumn="saved">Saved <p-sortIcon [field]="'saved'"></p-sortIcon></th>
+            <!-- Rating Column Header -->
+            <th>Rating</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-item>
         <tr>
-            <td>{{ item.id }}</td>
+            <td><img *ngIf="item.img" [src]="item.img" alt="Image for {{ item.title }}"
+                    style="max-width: 100px; max-height: 100px;" />
+            </td>
             <td>{{ item.title }}</td>
-            <td>{{ item.price | numberFormat}}</td>
-
-            <td>{{ item.clicked ? 'Visualizzato' : 'Nope' }}</td>
+            <td>{{ item.price | numberFormat }}</td>
+            <td>{{ item.clicked ? 'Visto' : 'Nope' }}</td>
             <td>{{ item.date_added }}</td>
             <td><a [href]="item.link" target="_blank" (click)="setClicked(item.id)">Link</a></td>
+            <td style="text-align: center;">
+                <span *ngIf="item.saved" (click)="toggleSaved(item.id,true)" class="pi pi-heart-fill"
+                    style="color: red;"></span>
+                <span *ngIf="!item.saved" (click)="toggleSaved(item.id, false)" class="pi pi-heart"
+                    style="color: gray;"></span>
+            </td>
+            <!-- Rating Column Body -->
+            <td>
+                <p-rating [(ngModel)]="item.rating" [stars]="5" cancel="true" [readonly]="false"
+                    (onRate)="onRatingChange(item)" (onCancel)="onRatingChange(item)">
+                </p-rating>
+            </td>
         </tr>
     </ng-template>
 </p-table>

@@ -1,3 +1,5 @@
+@import "primeicons/primeicons.css";
+
 .search-container {
     margin-bottom: 10px;
 }
@@ -6,4 +8,13 @@ input[pInputText] {
     width: 100%;
     padding: 8px;
     font-size: 14px;
+}
+
+/* Example CSS for heart icons if needed */
+.pi-heart-fill {
+    cursor: pointer;
+}
+
+.pi-heart {
+    cursor: pointer;
 }

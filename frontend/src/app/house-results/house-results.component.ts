@@ -3,11 +3,14 @@ import { TableModule } from 'primeng/table'; // Import the TableModule
 import { ItemDataService } from '../services/item-data.service';
 import { Item } from '../models/item.model';
 import { NumberFormatPipe } from '../number-format.pipe';
+import { CommonModule } from '@angular/common';
+import { RatingModule } from 'primeng/rating';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-house-results',
   standalone: true,
-  imports: [TableModule, NumberFormatPipe],
+  imports: [TableModule, CommonModule, NumberFormatPipe, RatingModule, FormsModule],
   templateUrl: './house-results.component.html',
   styleUrl: './house-results.component.scss'
 })
@@ -19,6 +22,22 @@ export class HouseResultsComponent implements OnInit {
     this.loadData();
   }
 
+  toggleSaved(itemId: number, saved: boolean): void {
+    // Call the API service to update the 'saved' state of the item
+    this.dataService.toggleSaved(itemId, !saved).subscribe(
+      response => {
+        console.log('Item updated:', response);
+        // Optionally, update the local item data
+        const item = this.data.find(i => i.id === itemId);
+        if (item) {
+          item.saved = !saved;  // Toggle the saved state locally
+        }
+      },
+      error => {
+        console.error('Error updating item:', error);
+      }
+    );
+  }
 
   setClicked(id: number): void {
     console.log("clicked");
@@ -50,6 +69,26 @@ export class HouseResultsComponent implements OnInit {
         console.log('Data loading completed');
       }
     });
+  }
+
+  // Handle rating change when the user clicks the stars
+  onRatingChange(item: any) {
+    console.log(`Item with ID ${item.id} rated as: ${item.rating}`);
+    var rating = item.rating;
+    this.dataService.changeRating(item.id, item.rating).subscribe(
+      response => {
+        console.log('Item updated:', response);
+        // Optionally, update the local item data
+        const item2: any = this.data.find(i => i.id === item.id);
+        if (item2) {
+          item2.rating = rating;  // Toggle the saved state locally
+        }
+      },
+      error => {
+        console.error('Error updating item:', error);
+      }
+    );
+
   }
 
   loadData(): void {
