@@ -165,3 +165,4 @@ backend/.DS_Store
 /frontend/.angular
 .DS_Store
 .DS_Store
+/node_modules

@@ -3,6 +3,12 @@ from flask_cors import CORS
 from tinydb import Query, TinyDB
 from math import ceil
 import re
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.date import DateTrigger
+from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
+
+import datetime
+import logging
 
 from manage import changeRating, setSaved
 from new_main import start_search_scraping
@@ -10,12 +16,28 @@ from new_main import start_search_scraping
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "PATCH", "DELETE", "OPTIONS"]}})
 
+# Setup logging for APScheduler
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
 db = TinyDB('./db.json')
 Property = Query()
 ##https://tinydb.readthedocs.io/en/latest/getting-started.html#installing-tinydb
 # Example JSON data (Python dictionary list)
 data = db.all()
 
+# Log events for job execution and errors
+def job_listener(event):
+    if event.exception:
+        logger.error(f"Job {event.job_id} failed")
+    else:
+        logger.info(f"Job {event.job_id} completed successfully")
+
+scheduler = BackgroundScheduler()
+scheduler.start()
+
+scheduler.add_listener(job_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
 
 @app.route('/set-clicked', methods=['PATCH'])
 def set_clicked():
@@ -63,31 +85,13 @@ def change_rating(item_id):
     return changeRating(item_id, rating)
 
 
-# Function to sort data based on column and direction
-def sort_data(data, column, direction):
-    if column == 'clicked':
-        # Ensure 'Nope' is treated as False and 'Visualizzato' as True
-        return sorted(data, key=lambda x: (x.get(column, 'Nope') == 'Visualizzato'), reverse=(direction == "desc"))
-    elif column == 'formattedValue':
-        # Special handling for formattedValue, convert to integer for sorting
-        return sorted(data, key=lambda x: parse_formatted_value(x[column]), reverse=(direction == "desc"))
-    else:
-        return sorted(data, key=lambda x: x[column], reverse=(direction == "desc"))
-
-def parse_formatted_value(value):
-    # Remove any non-numeric characters except for commas or periods
-    value = re.sub(r'[^\d,\.]', '', value)  # Remove currency symbols (like €)
-    value = value.replace('.', '')  # Remove thousands separators (periods)
-    value = value.replace(',', '')  # Remove commas (for thousands, if used)
-    return int(value) if value else 0  # Convert to integer
-
 
 @app.route('/get-data')
 def getData():
     data = db.all()
     return data
     
-@app.route('/')
+""" @app.route('/')
 def index():
     data = db.all()
     # Get page number, column, and sort direction from query string
@@ -110,6 +114,65 @@ def index():
 
     # Pass the page, total_pages, column, and direction to the template
     return render_template('index.html', data=paginated_data, page=page, total_pages=total_pages, column=column, direction=direction)
+ """
 
+
+@app.route('/api/scheduled-jobs', methods=['GET'])
+def get_scheduled_jobs():
+    try:
+        # Get all jobs from the scheduler
+        jobs = scheduler.get_jobs()
+
+        # Format job details
+        job_list = []
+        for job in jobs:
+            job_details = {
+                'id': job.id,
+                'next_run_time': job.next_run_time.isoformat() if job.next_run_time else None,
+                'trigger': str(job.trigger),  # Trigger type and information
+                'name': job.name,  # Job name (if any)
+            }
+            job_list.append(job_details)
+
+        # Return the list of scheduled jobs
+        return jsonify({'jobs': job_list}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# Endpoint to schedule the task
+@app.route('/api/schedule-task', methods=['POST'])
+def schedule_task():
+    data = request.get_json()
+    scheduled_time_str = data.get('time')
+
+    if not scheduled_time_str:
+        return jsonify({'error': 'No time provided'}), 400
+
+    try:
+        scheduled_time = datetime.datetime.fromisoformat(scheduled_time_str)
+    except ValueError:
+        return jsonify({'error': 'Invalid time format'}), 400
+
+    if scheduled_time < datetime.datetime.now(datetime.timezone.utc):
+        return jsonify({'error': 'Scheduled time must be in the future'}), 400
+
+    try:
+        trigger = DateTrigger(run_date=scheduled_time)
+        job = scheduler.add_job(call_start_search, trigger)
+        return jsonify({'message': f'Task scheduled for {job.next_run_time}'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+def call_start_search():
+    try:
+        for result in start_search_scraping():
+            logger.info(result)  # Process each yielded value (e.g., log or store it)
+    except Exception as e:
+        logger.error(f"Error in start_search_scraping: {e}")
+    
 if __name__ == '__main__':
     app.run(debug=True)
+    
+    

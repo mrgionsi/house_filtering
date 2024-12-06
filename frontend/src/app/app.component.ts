@@ -32,7 +32,13 @@ export class AppComponent {
             label: 'Search',
             icon: 'pi pi-link',
             route: '/search'
+          },
+          {
+            label: 'Settings',
+            icon: 'pi pi-cog',
+            route: '/settings'
           }
+
         ]
       }
     ];

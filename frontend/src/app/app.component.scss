@@ -22,3 +22,24 @@
 .router-outlet {
     margin-left: 3px
 }
+
+
+.ml-2 {
+    margin-left: 6px;
+}
+
+
+
+
+/* Card element should also take up full height */
+.p-menu {
+    height: 100%;
+
+}
+
+/* p-menu should fill the full height */
+.full-height-card {
+    height: 99vh;
+    /* Ensures p-menu takes full available height */
+
+}
