@@ -12,6 +12,6 @@ RUN npm run build --prod
 # Nginx Stage
 FROM nginx:alpine
 
-COPY --from=build-stage /app/dist/your-angular-app /usr/share/nginx/html
-
+COPY --from=build-stage frontend/dist/house_filtering/browser /usr/share/nginx/html
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
