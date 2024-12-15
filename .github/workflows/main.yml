@@ -50,8 +50,8 @@ jobs:
 
       - name: Push Backend Docker Image
         run: |
-          docker push ghcr.io/${{ github.repository }}/backend:latest
+          docker push ghcr.io/${{ github.repository }}/house-filtering-backend:latest
 
       - name: Push Frontend Docker Image
         run: |
-          docker push ghcr.io/${{ github.repository }}/frontend:latest
+          docker push ghcr.io/${{ github.repository }}/fhouse-filtering-rontend:latest
