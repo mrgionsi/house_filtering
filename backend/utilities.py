@@ -5,7 +5,7 @@ import requests
 import time
 from flask import current_app
 
-from manage import JsonObject, addEntry
+from data_handler import JsonObject, addEntry
 
 
 

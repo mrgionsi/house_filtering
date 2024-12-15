@@ -1,3 +1,4 @@
+import json
 from flask import Flask, Response, render_template, request, jsonify, stream_with_context
 from flask_cors import CORS
 from tinydb import Query, TinyDB
@@ -6,12 +7,15 @@ import re
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
+import requests
+import brotlicffi
+from bs4 import BeautifulSoup
 
 import datetime
 import logging
 
-from manage import changeRating, setSaved
-from new_main import start_search_scraping
+from data_handler import changeRating, setSaved
+from utilities import start_search_scraping
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "PATCH", "DELETE", "OPTIONS"]}})
@@ -171,7 +175,9 @@ def call_start_search():
             logger.info(result)  # Process each yielded value (e.g., log or store it)
     except Exception as e:
         logger.error(f"Error in start_search_scraping: {e}")
-    
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
     

@@ -3,12 +3,11 @@ from tinydb import TinyDB, Query
 db = TinyDB('./db.json')
 User = Query()
 ##https://tinydb.readthedocs.io/en/latest/getting-started.html#installing-tinydb
-print(db.all())
 # Parse JSON data
 # Count the number of entries
 entry_count = len(db.all())
 
-print("Number of entries:", entry_count)
+#print("Number of entries:", entry_count)
   
 def addEntry(row):
     db = TinyDB('db.json')
