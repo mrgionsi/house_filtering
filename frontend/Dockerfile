@@ -1,0 +1,17 @@
+# Frontend Dockerfile
+FROM node:18 as build-stage
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build --prod
+
+# Nginx Stage
+FROM nginx:alpine
+
+COPY --from=build-stage /app/dist/your-angular-app /usr/share/nginx/html
+
+CMD ["nginx", "-g", "daemon off;"]
