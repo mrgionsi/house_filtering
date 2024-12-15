@@ -44,6 +44,7 @@ jobs:
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
+          context: .
           registry: ghcr.io
           username: mrgionsi
           password: ${{ secrets.GITHUB_TOKEN }}
@@ -54,4 +55,4 @@ jobs:
 
       - name: Push Frontend Docker Image
         run: |
-          docker push ghcr.io/${{ github.repository }}/fhouse-filtering-rontend:latest
+          docker push ghcr.io/${{ github.repository }}/house-filtering-frontend:latest
