@@ -24,7 +24,7 @@ jobs:
 
       - name: Build Python Backend Docker Image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/backend:latest ./backend
+          docker build -t ghcr.io/${{ github.repository }}/house-filtering-backend:latest ./backend
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -39,7 +39,7 @@ jobs:
 
       - name: Build Frontend Nginx Docker Image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/frontend:latest ./frontend
+          docker build -t ghcr.io/${{ github.repository }}/house-filtering-frontend:latest ./frontend
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
