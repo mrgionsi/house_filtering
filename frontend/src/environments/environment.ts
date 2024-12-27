@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    backend_url: 'http://hf-backend:5000'
+    backend_url: 'http://192.168.178.15:5001'
 };
