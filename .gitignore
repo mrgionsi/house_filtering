@@ -167,3 +167,4 @@ backend/.DS_Store
 .DS_Store
 /node_modules
 backend/db.json
+backend/db.json
