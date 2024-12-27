@@ -2,12 +2,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 import { Item } from '../models/item.model'; // Adjust the path as necessary
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ItemDataService {
-  private apiUrl = 'http://127.0.0.1:5000'; // Correctly formatted URL
+  private apiUrl = environment.backend_url; // Correctly formatted URL
 
   constructor(private http: HttpClient) { }
 

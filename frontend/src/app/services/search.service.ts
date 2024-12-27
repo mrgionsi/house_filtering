@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SearchService {
-  private apiUrl = 'http://localhost:5000/search'; // Replace with your API URL
+  private apiUrl = environment.backend_url; // Replace with your API URL
 
   constructor(private http: HttpClient) { }
 
