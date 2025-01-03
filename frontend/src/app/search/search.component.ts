@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SearchService } from '../services/search.service';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-search',
@@ -25,7 +26,7 @@ export class SearchComponent implements OnInit {
 
     this.logs.push("Starting search...\n");
     try {
-      const response = await fetch('http://localhost:5000/search');
+      const response = await fetch(environment.backend_url + '/search');
       if (!response.body) {
         this.logs.push("Streaming not supported.\n");
         return;
